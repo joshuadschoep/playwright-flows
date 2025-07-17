@@ -1,0 +1,47 @@
+{
+  "name": "playwright-flows",
+  "version": "1.2.0",
+  "description": "This library is meant to extend and wrap the [Playwright](https://github.com/microsoft/playwright) project, providing an easy API for multi-step forms, and longer flows in general.",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "dist/index.js.map",
+    "dist/dts"
+  ],
+  "types": "dist/dts/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshuadschoep/playwright-flows.git"
+  },
+  "keywords": [
+    "playwright",
+    "qa",
+    "automation",
+    "testing"
+  ],
+  "author": "Joshua Schoep",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/joshuadschoep/playwright-flows/issues"
+  },
+  "homepage": "https://github.com/joshuadschoep/playwright-flows#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/lodash": "^4.17.20",
+    "rollup": "^4.45.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.54.1",
+    "playwright": "^1.54.1",
+    "playwright-core": "^1.54.1"
+  }
+}
