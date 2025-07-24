@@ -5,6 +5,7 @@ on:
   workflow_run:
     workflows:
       - Continuous Integration
+      - CodeQL
     types:
       - completed
     branches:
