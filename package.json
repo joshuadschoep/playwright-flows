@@ -1,6 +1,6 @@
 {
   "name": "playwright-flows",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "This library is meant to extend and wrap the [Playwright](https://github.com/microsoft/playwright) project, providing an easy API for multi-step forms, and longer flows in general.",
   "main": "dist/index.js",
   "files": [
