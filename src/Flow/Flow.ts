@@ -1,61 +1,77 @@
-import { Flow, FlowException, FlowOptions, StepFunction } from "./types";
+import { CreateFlowParameters, Flow, FlowOptions } from "./types";
 import _ from "lodash";
-import { LIBRARY_DEFAULT_OPTIONS } from "./const";
+import { FlowException, LIBRARY_DEFAULT_OPTIONS } from "./const";
+import { FlowContext } from "Context/Context";
 
 export function createFlow<
-  Fields extends object = {},
-  CustomOptions extends object = {},
-  TestConfiguration extends object = {}
->(
-  id: string,
-  steps: StepFunction<Fields, CustomOptions> | Array<Flow>,
-  defaultFields: Fields,
-  defaultOptions: FlowOptions<CustomOptions>
-): Flow<Fields, CustomOptions, TestConfiguration> {
+  Fields extends object = Record<string, any>,
+  Options extends FlowOptions = FlowOptions,
+  Context extends FlowContext = FlowContext
+>({
+  id,
+  handler,
+  defaultFields,
+  defaultOptions,
+}: CreateFlowParameters<Fields, Options, Context>): Flow<Fields, Options, Context> {
   return {
     id,
-    handler: async (page, fields, options, context) => {
-      const mergedFields: any = _.merge({}, defaultFields, fields);
-      const mergedOptions: any = _.merge({}, LIBRARY_DEFAULT_OPTIONS, defaultOptions, options);
-      if (mergedOptions.preProcess) {
-        await mergedOptions.preProcess(page, id, mergedOptions, context);
+    execute: async (page, fields, options, context) => {
+      const mergedFields: Fields = _.merge({}, defaultFields, fields);
+      const mergedOptions: Options = _.merge({}, LIBRARY_DEFAULT_OPTIONS, defaultOptions, options);
+      const defaultExceptions = [] as Array<FlowException>;
+      if (mergedOptions.stopParentBefore) {
+        return defaultExceptions;
       }
 
-      if (mergedOptions.exceptions.includes(FlowException.DebugBefore)) {
+      if (mergedOptions.preProcess) {
+        await mergedOptions.preProcess(page, mergedFields, mergedOptions, context);
+      }
+
+      if (mergedOptions.debugBefore) {
         await page.pause();
       }
 
-      if (Array.isArray(steps)) {
+      if (Array.isArray(handler)) {
         let currentPage = page;
-        for (let i = 0; i < steps.length; i++) {
-          const step = steps[i];
-          const childFields = mergedFields[step.id];
-          const childOptions = mergedOptions[step.id];
-          const exceptions = await step.handler(currentPage, childFields, childOptions, context);
+        for (let i = 0; i < handler.length; i++) {
+          const step = handler[i];
+          let childFields = mergedFields;
+          let childOptions = {};
+          if (step?.id) {
+            if (step.id in mergedFields) {
+              childFields = (mergedFields as Record<string, Fields>)[step.id] as Fields;
+            }
+            if (step.id in mergedOptions) {
+              // @ts-expect-error I think typescript is dumb for not figuring this one out
+              childOptions = mergedOptions[step.id] as FlowOptions;
+            }
+          }
+          const exceptions = await step.execute(currentPage, childFields, childOptions, context);
 
-          if (exceptions.includes(FlowException.StopParentAfter)) {
+          if (exceptions.includes(FlowException.StopParent)) {
             break;
           }
           if (exceptions.includes(FlowException.UseNewPageOnStack)) {
-            const newPage = context?.pageStack.peek();
+            defaultExceptions.push(FlowException.UseNewPageOnStack);
+            const newPage = context?.pages.peek();
             if (newPage) {
               currentPage = newPage;
             }
           }
         }
       } else {
-        await steps(page, mergedFields, mergedOptions.custom, context);
+        await handler(page, mergedFields, mergedOptions, context);
       }
 
-      if (mergedOptions.exceptions.includes(FlowException.DebugAfter)) {
+      if (mergedOptions.debugAfter) {
         await page.pause();
       }
 
       if (mergedOptions.postProcess) {
-        await mergedOptions.postProcess(page, id, mergedOptions, context);
+        await mergedOptions.postProcess(page, mergedFields, mergedOptions, context);
       }
 
-      return mergedOptions.exceptions;
+      return defaultExceptions;
     },
   };
 }
