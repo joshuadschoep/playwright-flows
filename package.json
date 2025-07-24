@@ -22,7 +22,8 @@
     "types:check": "tsc --project tsconfig.json --noEmit",
     "types": "npm run types:compile",
     "release:dry": "semantic-release --dry-run",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -44,11 +45,14 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.31.0",
     "@rollup/plugin-typescript": "^12.1.4",
     "@semantic-release/git": "^10.0.1",
     "@types/lodash": "^4.17.20",
     "eslint": "^9.31.0",
+    "husky": "^8.0.0",
     "prettier": "^3.6.2",
     "rollup": "^4.45.1",
     "semantic-release": "^24.2.7",
