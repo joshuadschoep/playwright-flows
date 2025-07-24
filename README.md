@@ -39,13 +39,10 @@ pnpm install playwright-flows
 ### Dead simple
 
 ```typescript
-import { createFlow, createTest, FlowConfig, FlowSteps } from "playwright-flows";
-
 import { expect, test } from "@playwright/test";
 
 const loginSteps = (page, config, options) => {
   page.getByRole("input", { name: "Username" }).fill(config.username);
-
   page.getByRole("input", { name: "Password" }).fill(config.password ?? process.env.TEST_PASSWORD);
 
   if (options.login) {
@@ -53,12 +50,12 @@ const loginSteps = (page, config, options) => {
   }
 };
 
-const login = createFlow(loginSteps, {
-  fields: {
+const login = createFlow({
+  handler: loginSteps,
+  defaultFields: {
     username: "test_user",
   },
-
-  options: {
+  defaultOptions: {
     login: true,
   },
 });
@@ -66,10 +63,8 @@ const login = createFlow(loginSteps, {
 test(
   ...createTest({
     name: "Logins in as default user",
-
-    flow: [login],
-
-    after: (page, config, options) => {
+    flow: login,
+    after: (page) => {
       await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
     },
   }),
@@ -81,13 +76,10 @@ test(
 Flows is nothing more than a handy method wrapper with a clean API. Feel free to use it however _you_ want.
 
 ```typescript
-import { createFlow, createTest, FlowConfig, FlowSteps } from "playwright-flows";
-
 import { expect, test } from "@playwright/test";
 
 const loginSteps: FlowSteps<LoginFormFields> = (page, config, options) => {
   page.getByRole("input", { name: "Username" }).fill(config.username);
-
   page.getByRole("input", { name: "Password" }).fill(config.password);
 
   if (options.login) {
@@ -95,20 +87,19 @@ const loginSteps: FlowSteps<LoginFormFields> = (page, config, options) => {
   }
 };
 
-const login = createFlow(loginSteps);
+const login = createFlow({
+  handler: loginSteps,
+});
 
 test("should handle legacy login at specific url", async ({ page }) => {
   await page.goto("mywebsite.com/login?legacy=true");
 
-  await login(
+  await login.execute(
     page,
-
     {
       username: "legacy_user",
-
       password: "legacy_password",
     },
-
     {
       login: true,
     },
@@ -121,52 +112,45 @@ test("should handle legacy login at specific url", async ({ page }) => {
 ### Typing Support
 
 ```typescript
-import { createFlow, createTest, FlowConfig, FlowSteps } from "playwright-flows";
-
 import { expect, test } from "@playwright/test";
 
 interface LoginFormFields {
   username: string;
-
   password: string;
 }
 
-interface LoginFormOptions {
+interface LoginFormOptions extends FlowOptions {
   login: boolean;
 }
 
-type LoginFormConfig = FlowConfig<LoginFormFields, LoginFormOptions>;
-
-const defaultLoginConfig: LoginFormFields = {
-  fields: {
-    username: "test_user",
-
-    password: process.env.TEST_PASSWORD,
-  },
-
-  options: {
-    login: true,
-  },
+const defaultFields: LoginFormFields = {
+  username: "test_user",
+  password: process.env.TEST_PASSWORD,
 };
 
-const loginSteps: FlowSteps<LoginFormFields> = (page, config, options) => {
+const defaultOptions: LoginFormOptions = {
+  login: true,
+  debugAfter: true,
+};
+
+const loginSteps: FlowHandler<LoginFormFields, LoginFormOptions> = (page, config, options) => {
   page.getByRole("input", { name: "Username" }).fill(config.username);
-
   page.getByRole("input", { name: "Password" }).fill(config.password);
-
   if (options.login) {
     page.getByRole("button", { name: "Login" }).click();
   }
 };
 
-const login = createFlow(loginSteps, defaultLoginConfig);
+const login = createFlow({
+  handler: loginSteps,
+  defaultFields,
+  defaultOptions
+});
 
 test(
   ...createTest({
     name: "Logins in as default user",
-
-    flow: [login],
-
+    flow: login,
     after: (page, config, options) => {
       await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
     },
@@ -176,19 +160,14 @@ test(
 test(
   ...createTest({
     name: "Blocks invalid user login",
-
-    flow: [
-      {
-        handler: login,
-
-        fields: {
-          username: "invalid_user",
-
-          password: "nonexistent_password",
-        },
-      },
-    ],
-
+    flow: login,
+    fields: {
+        username: "invalid_user",
+        password: "nonexistent_password",
+    },
+    options: {
+      login: true,
+    }
     after: (page, config, options) => {
       await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
     },
@@ -201,24 +180,40 @@ test(
 Now for the actual fun, reusable flows and parent/children relationships
 
 ```typescript
+import { test } from "playwright/test";
+
+const login = createFlow({
+  id: "login",
+  handler: (page) => {
+    //...
+  },
+});
+const openSettings = createFlow({
+  handler: (page) => {
+    //...
+  },
+});
+
 test(
   ...createTest({
-    name: "Logs in then navigates to a different page",
-    flow: [
-      {
-        handler: login,
-        fields: {
-          //...
-        },
-      },
-    ],
+    name: "Logs in then navigates but as a parent flow",
+    flow: createFlow({
+      handler: [login, openSettings],
+    }),
   }),
 );
 
 test(
   ...createTest({
-    name: "Logs in then navigates but as a parent flow",
-    flow: [primary],
+    name: "Settings page is personalized",
+    flow: createFlow({
+      handler: [login, openSettings],
+      fields: {
+        login: {
+          username: "other_user",
+        },
+      },
+    }),
   }),
 );
 ```
