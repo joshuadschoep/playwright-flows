@@ -10,6 +10,7 @@
     "skipDefaultLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
+    "skipLibCheck": true,
     "moduleResolution": "node",
     "paths": {
       "src/*": ["./src/*"]

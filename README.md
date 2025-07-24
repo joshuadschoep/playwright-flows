@@ -17,25 +17,19 @@ This project is available on [npm](https://www.npmjs.com/) and is installable wi
 ### NPM
 
 ```bash
-
 npm install --save playwright-flows
-
 ```
 
 ### Yarn
 
 ```bash
-
 yarn add playwright-flows
-
 ```
 
 ### PNPM
 
 ```bash
-
 pnpm install playwright-flows
-
 ```
 
 ---
@@ -78,7 +72,7 @@ test(
     after: (page, config, options) => {
       await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
     },
-  })
+  }),
 );
 ```
 
@@ -117,7 +111,7 @@ test("should handle legacy login at specific url", async ({ page }) => {
 
     {
       login: true,
-    }
+    },
   );
 
   await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
@@ -176,7 +170,7 @@ test(
     after: (page, config, options) => {
       await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
     },
-  })
+  }),
 );
 
 test(
@@ -198,7 +192,7 @@ test(
     after: (page, config, options) => {
       await expect(page.getByRole("heading", { name: "Home" })).toBeVisible();
     },
-  })
+  }),
 );
 ```
 
@@ -218,13 +212,13 @@ test(
         },
       },
     ],
-  })
+  }),
 );
 
 test(
   ...createTest({
     name: "Logs in then navigates but as a parent flow",
     flow: [primary],
-  })
+  }),
 );
 ```
