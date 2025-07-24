@@ -1,6 +1,6 @@
 {
   "name": "playwright-flows",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "This library is meant to extend and wrap the [Playwright](https://github.com/microsoft/playwright) project, providing an easy API for multi-step forms, and longer flows in general.",
   "main": "dist/index.js",
   "files": [
@@ -20,7 +20,9 @@
     "format": "npm run format:write",
     "types:compile": "tsc --project tsconfig.json",
     "types:check": "tsc --project tsconfig.json --noEmit",
-    "types": "npm run types:compile"
+    "types": "npm run types:compile",
+    "release:dry": "semantic-release --dry-run",
+    "release": "semantic-release"
   },
   "repository": {
     "type": "git",
