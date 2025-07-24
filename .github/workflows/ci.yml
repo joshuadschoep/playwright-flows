@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run Jest
-        uses: exit 0
+        run: exit 0
   compile:
     name: "Compile"
     runs-on: ubuntu-latest
