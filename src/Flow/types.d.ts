@@ -79,7 +79,7 @@ export interface FlowOptions<Fields extends object = object, Context extends Flo
 export type FlowHandler<
   Fields extends object = object,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 > = (page: Page, fields: Fields, options: Options, context?: Context) => Promise<void>;
 
 /**
@@ -90,7 +90,7 @@ export type FlowHandler<
 export interface CreateFlowParameters<
   Fields extends object = object,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 > {
   id?: string;
   handler: FlowHandler<Fields, Options, Context> | Array<Flow>;
@@ -108,7 +108,7 @@ export interface CreateFlowParameters<
 export type Executer<
   Fields extends object = object,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 > = (page: Page, fields: Fields, options: Options, context?: Context) => Promise<Array<FlowException>>;
 
 /**
@@ -119,7 +119,7 @@ export type Executer<
 export interface Flow<
   Fields extends object = object,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 > {
   id?: string;
   execute: Executer<Fields, Options, Context>;

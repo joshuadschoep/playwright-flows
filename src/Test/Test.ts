@@ -17,7 +17,7 @@ import _ from "lodash";
 export interface Test<
   Fields extends object = Record<string, any>,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 > {
   name: string;
   flow: Flow<Fields, Options, Context>;
@@ -51,7 +51,7 @@ export const LIBRARY_DEFAULT_TEST: Pick<Test, "name" | "fields" | "options"> & {
 export type CreateTestParameters<
   Fields extends object = Record<string, any>,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 > = Omit<Test<Fields, Options, Context>, "context"> & { context: Omit<Context, keyof FlowContext> };
 
 type PlaywrightTestParameters = Parameters<Parameters<typeof playwrightTest>[2]>[0];
@@ -82,7 +82,7 @@ type PlaywrightTestParameters = Parameters<Parameters<typeof playwrightTest>[2]>
 export function createTest<
   Fields extends object = Record<string, any>,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 >(testConfig: CreateTestParameters<Fields, Options, Context>) {
   const mergedTest = _.merge({}, LIBRARY_DEFAULT_TEST, testConfig) as Test<Fields, Options, Context>;
   return [

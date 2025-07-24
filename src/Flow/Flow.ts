@@ -6,7 +6,7 @@ import { FlowContext } from "Context/Context";
 export function createFlow<
   Fields extends object = Record<string, any>,
   Options extends FlowOptions = FlowOptions,
-  Context extends FlowContext = FlowContext
+  Context extends FlowContext = FlowContext,
 >({
   id,
   handler,
