@@ -11,6 +11,7 @@
 Possible vulnerabilities can be reported to `joshuaschoep@gmail.com`.
 
 Please do the following:
+
 - Provide a clear description of the vulnerability.
 - Include steps to reproduce the issue.
 - If possible, suggest a potential fix or mitigation.
