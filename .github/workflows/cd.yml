@@ -1,10 +1,9 @@
-name: Release
-run-name: Release on ${{ github.ref }}
+name: Continuous Delivery
 
 on:
   workflow_run:
     workflows:
-      - CodeQL
+      - Continuous Integration
     types:
       - completed
     branches:
