@@ -13,6 +13,9 @@ on:
       - releases/**
       - lts/**
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: "Lint & Format"
