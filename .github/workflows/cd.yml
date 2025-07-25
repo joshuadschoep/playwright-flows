@@ -1,5 +1,5 @@
 name: Continuous Delivery
-run-name: "Release"
+run-name: Release
 
 on:
   workflow_run:
