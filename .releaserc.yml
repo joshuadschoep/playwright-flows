@@ -3,6 +3,8 @@ branches:
   - release/**
   - lts/**
 
+repositoryUrl: git@github.com:joshuadschoep/playwright-flows
+
 plugins:
   - "@semantic-release/commit-analyzer"
   - "@semantic-release/npm"

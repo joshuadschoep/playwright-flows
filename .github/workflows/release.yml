@@ -1,5 +1,5 @@
-name: "Create/update release branch"
-run-name: "Create or update release branch"
+name: Release
+run-name: Release on ${{ github.ref }}
 
 on:
   workflow_run:
